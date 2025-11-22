@@ -1,0 +1,10 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* This ensures the main content grows and footer stays at bottom */
+.App > :nth-child(2) {
+  flex: 1;
+}
