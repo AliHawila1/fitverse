@@ -16,7 +16,6 @@ const Contact = () => {
   const handleSubmit = e => {
     e.preventDefault();
     alert(JSON.stringify(state));
-    // Reset form after submission
     setState({ fname: "", email: "", message: "" });
   };
 

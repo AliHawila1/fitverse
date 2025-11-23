@@ -1,6 +1,6 @@
 // Login.js
 import React, { useState } from "react";
-
+import {useNavigate } from "react-router-dom";
 const Login = ({ onLogin }) => {
   const [state, setState] = useState({ 
     username: "", 
@@ -12,16 +12,19 @@ const Login = ({ onLogin }) => {
     const value = e.target.value;
     setState({ ...state, [name]: value });
   };
+      const Navigate=useNavigate();
 
   const handleSubmit = e => {
     e.preventDefault();
     
-    // Simple front-end authentication
     if (state.username === "admin" && state.password === "admin") {
       onLogin("admin");
+      Navigate('/admin');
     } else if (state.username === "user" && state.password === "user") {
       onLogin("user");
-    } else {
+     Navigate('/services');
+    } 
+    else {
       alert("Invalid credentials! Try: admin/admin or user/user");
     }
     

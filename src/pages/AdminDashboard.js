@@ -1,8 +1,6 @@
-// AdminDashboard.js in pages folder
 import React, { useState } from "react";
 
 const AdminDashboard = ({ user }) => {
-  // Dummy data for demonstration
   const [users, setUsers] = useState([
     { id: 1, name: "John Doe", email: "john@email.com", joinDate: "2024-01-15", status: "Active" },
     { id: 2, name: "Jane Smith", email: "jane@email.com", joinDate: "2024-02-20", status: "Active" },
@@ -42,7 +40,6 @@ const AdminDashboard = ({ user }) => {
     setNewUser({ ...newUser, [name]: value });
   };
 
-  // Redirect if not admin
   if (user !== "admin") {
     return (
       <div className="bg-black min-h-screen text-white pt-28 px-6 md:px-12 flex items-center justify-center">
@@ -60,11 +57,9 @@ const AdminDashboard = ({ user }) => {
 
       <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
         
-        {/* User Management Section */}
         <div className="bg-gray-800 rounded-2xl p-6">
           <h2 className="text-2xl font-bold mb-4 text-[#00df9a]">User Management</h2>
           
-          {/* Add User Form */}
           <div className="mb-6 p-4 bg-gray-700 rounded-lg">
             <h3 className="text-lg font-bold mb-3">Add New User</h3>
             <div className="flex gap-2">
@@ -93,7 +88,6 @@ const AdminDashboard = ({ user }) => {
             </div>
           </div>
 
-          {/* Users List */}
           <div className="space-y-3">
             {users.map(user => (
               <div key={user.id} className="flex justify-between items-center p-3 bg-gray-700 rounded">
@@ -115,7 +109,6 @@ const AdminDashboard = ({ user }) => {
           </div>
         </div>
 
-        {/* Orders Section */}
         <div className="bg-gray-800 rounded-2xl p-6">
           <h2 className="text-2xl font-bold mb-4 text-[#00df9a]">Recent Orders</h2>
           <div className="space-y-3">
@@ -142,7 +135,6 @@ const AdminDashboard = ({ user }) => {
         </div>
       </div>
 
-      {/* Statistics */}
       <div className="max-w-6xl mx-auto mt-8">
         <div className="bg-gray-800 rounded-2xl p-6">
           <h2 className="text-2xl font-bold mb-4 text-[#00df9a]">Statistics</h2>
