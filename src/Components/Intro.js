@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import image1 from "../assets/image1.jpg";
 import image2 from "../assets/image2.jpg";
 import image3 from "../assets/image3.jpg";
 import { ReactTyped as Typed } from "react-typed";
 import { Link } from "react-router-dom";
 
-const images = [image1, image2, image3];
+const images = [image2, image3];
 
 const Intro = () => {
   const [index, setIndex] = useState(0);
@@ -13,14 +12,13 @@ const Intro = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="relative w-full min-h-screen pt-24">
-      {/* Slideshow Background */}
       <div className="w-full h-screen overflow-hidden">
         <img
           src={images[index]}
@@ -30,7 +28,6 @@ const Intro = () => {
      
       </div>
 
-      {/* Content on top */}
       <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-4">
         <p className="text-[#00df9a] font-bold mb-4 text-xl md:text-2xl">
           Your Fitness Journey Starts Here.

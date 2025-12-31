@@ -1,8 +1,6 @@
-// NavBar.js
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
-import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { AiOutlineShoppingCart } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineMenu, AiOutlineShoppingCart } from "react-icons/ai";
 
 const NavBar = ({ cartCount, user, onLogout }) => {
   const [menu, setMenuOpen] = useState(false);
@@ -16,23 +14,21 @@ const NavBar = ({ cartCount, user, onLogout }) => {
   };
 
   return (
-    <div className=" flex justify-between items-center h-24 mx-auto px-4 text-white fixed top-0 left-0 w-full z-50 bg-black">
+    <div className="flex justify-between items-center h-24 mx-auto px-4 text-white fixed top-0 left-0 w-full z-50 bg-black">
       <h1 className="w-full text-3xl font-bold text-[#00df9a]">FitVerse</h1>
 
       <ul className="hidden md:flex">
-        {/* Always visible routes */}
         <li className="p-4"><Link to="/">Home</Link></li>
         <li className="p-4"><Link to="/about">About</Link></li>
         <li className="p-4"><Link to="/contact">Contact</Link></li>
-        
-        {/* User-only routes - NOT visible to admin */}
-        {user === "user" && (
+
+        {user && user.username !== "admin" && (
           <>
             <li className="p-4"><Link to="/services">Services</Link></li>
             <li className="p-4"><Link to="/equipments">Equipments</Link></li>
             <li className="p-4 ml-4 cursor-pointer relative">
               <Link to="/cart">
-                <AiOutlineShoppingCart size={25}/>
+                <AiOutlineShoppingCart size={25} />
                 {cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-[#00df9a] text-black rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
                     {cartCount}
@@ -42,28 +38,33 @@ const NavBar = ({ cartCount, user, onLogout }) => {
             </li>
           </>
         )}
-        
-        {/* Admin-only route - ONLY visible to admin */}
-        {user === "admin" && (
-          <li className="p-4"><Link to="/admin">Admin Dashboard</Link></li>
+
+        {user && user.username === "admin" && (
+          <li className="p-4"><Link to="/admin-dashboard">Admin Dashboard</Link></li>
         )}
-        
-        {/* Login/Logout */}
+
         {user ? (
           <li className="p-4">
-            <button onClick={onLogout} className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">
-              Logout ({user})
+            <button
+              onClick={handleLogoutClick}
+              className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
+            >
+              Logout ({user.username})
             </button>
           </li>
         ) : (
           <li className="p-4">
-            <Link to="/login" className="bg-[#00df9a] text-black px-4 py-2 rounded-lg hover:bg-[#00c785] transition duration-300">
+            <Link
+              to="/login"
+              className="bg-[#00df9a] text-black px-4 py-2 rounded-lg hover:bg-[#00c785] transition duration-300"
+            >
               Login
             </Link>
           </li>
         )}
       </ul>
 
+      {/* Mobile menu */}
       <div onClick={handleNav} className="block cursor-pointer md:hidden z-10">
         {menu ? <AiOutlineClose size={25} /> : <AiOutlineMenu size={25} />}
       </div>
@@ -76,9 +77,7 @@ const NavBar = ({ cartCount, user, onLogout }) => {
         }
       >
         <h1 className="w-full text-3xl font-bold text-[#00df9a] m-4">FitVerse</h1>
-
         <ul className="uppercase p-4">
-          {/* Always visible routes */}
           <li className="p-4 border-b border-gray-600">
             <Link to="/" onClick={closeMenu}>Home</Link>
           </li>
@@ -88,9 +87,8 @@ const NavBar = ({ cartCount, user, onLogout }) => {
           <li className="p-4 border-b border-gray-600">
             <Link to="/contact" onClick={closeMenu}>Contact</Link>
           </li>
-          
-          {/* User-only routes - NOT visible to admin */}
-          {user === "user" && (
+
+          {user && user.username !== "admin" && (
             <>
               <li className="p-4 border-b border-gray-600">
                 <Link to="/services" onClick={closeMenu}>Services</Link>
@@ -103,19 +101,20 @@ const NavBar = ({ cartCount, user, onLogout }) => {
               </li>
             </>
           )}
-          
-          {/* Admin-only route - ONLY visible to admin */}
-          {user === "admin" && (
+
+          {user && user.username === "admin" && (
             <li className="p-4 border-b border-gray-600">
-              <Link to="/admin" onClick={closeMenu}>Admin Dashboard</Link>
+              <Link to="/admin-dashboard" onClick={closeMenu}>Admin Dashboard</Link>
             </li>
           )}
-          
-          {/* Login/Logout */}
+
           {user ? (
             <li className="p-4 border-b border-gray-600">
-              <button onClick={handleLogoutClick} className="text-red-500 w-full text-left">
-                Logout ({user})
+              <button
+                onClick={handleLogoutClick}
+                className="text-red-500 w-full text-left"
+              >
+                Logout ({user.username})
               </button>
             </li>
           ) : (

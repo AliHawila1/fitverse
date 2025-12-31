@@ -1,34 +1,50 @@
-// Login.js
 import React, { useState } from "react";
-import {useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+
 const Login = ({ onLogin }) => {
-  const [state, setState] = useState({ 
-    username: "", 
-    password: "" 
+  const [state, setState] = useState({
+    username: "",
+    password: ""
   });
 
-  const handleChange = e => {
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
     setState({ ...state, [name]: value });
   };
-      const Navigate=useNavigate();
 
-  const handleSubmit = e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (state.username === "admin" && state.password === "admin") {
-      onLogin("admin");
-      Navigate('/admin');
-    } else if (state.username === "user" && state.password === "user") {
-      onLogin("user");
-     Navigate('/services');
-    } 
-    else {
-      alert("Invalid credentials! Try: admin/admin or user/user");
+
+    const { username, password } = state;
+
+    // Hardcoded admin login
+    if (username === "admin" && password === "admin") {
+      const adminUser = { username: "admin" };
+      onLogin(adminUser);
+      navigate("/adminDashboard");
+      return;
     }
-    
-    setState({ username: "", password: "" });
+
+    // Normal user login from database
+    try {
+      const res = await axios.post("http://localhost:5000/login", { username, password });
+      const user = res.data;
+
+      if (!user) {
+        alert("Invalid username or password");
+        return;
+      }
+
+      onLogin(user);
+      navigate("/services"); // redirect normal user
+    } catch (err) {
+      console.log(err);
+      alert("Invalid username or password");
+    }
   };
 
   return (
@@ -45,6 +61,7 @@ const Login = ({ onLogin }) => {
               placeholder="Enter username"
               value={state.username}
               onChange={handleChange}
+              required
               className="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00df9a]"
             />
           </div>
@@ -57,6 +74,7 @@ const Login = ({ onLogin }) => {
               placeholder="Enter password"
               value={state.password}
               onChange={handleChange}
+              required
               className="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00df9a]"
             />
           </div>
@@ -69,32 +87,16 @@ const Login = ({ onLogin }) => {
           </button>
         </form>
 
-        <div className="mt-6 p-4 bg-gray-900 rounded-lg">
-          <p className="text-sm text-center text-gray-300 mb-2">
-            Demo Credentials:
-          </p>
-          <div className="text-sm space-y-2">
-            <div className="flex justify-between items-center p-2 bg-gray-800 rounded">
-              <span><strong>Admin:</strong> admin / admin</span>
-              <span className="text-[#00df9a] text-xs">Dashboard Only</span>
-            </div>
-            <div className="flex justify-between items-center p-2 bg-gray-800 rounded">
-              <span><strong>User:</strong> user / user</span>
-              <span className="text-[#00df9a] text-xs">Full Website Access</span>
-            </div>
+        <p className="text-center text-sm mt-4">
+          Don't have an account?{" "}
+          <Link to="/registration" className="text-blue-400 hover:underline">
+            Register here
+          </Link>
+        </p>
+           
           </div>
-          <p className="text-xs text-center mt-3 text-gray-400">
-            Admin can only access Dashboard. User can access all shopping features.
-          </p>
+         
         </div>
-
-        <div className="mt-4 p-3 bg-blue-900 rounded-lg">
-          <p className="text-sm text-center text-blue-200">
-            🔒 Login required to access Services, Equipment, and Cart features
-          </p>
-        </div>
-      </div>
-    </div>
   );
 };
 

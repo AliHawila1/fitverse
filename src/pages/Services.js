@@ -1,4 +1,3 @@
-// Services.js
 import React, { useState } from "react";
 
 const Services = ({ onAddToCart }) => {

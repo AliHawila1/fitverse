@@ -1,4 +1,4 @@
-// Equipments.js
+
 import bot from "../assets/bot.jpg"
 import bottle from "../assets/bottle.jpg"
 import dumbells from "../assets/dumbells.webp"
