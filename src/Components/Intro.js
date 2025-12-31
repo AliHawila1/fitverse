@@ -51,7 +51,7 @@ const Intro = () => {
           The Future of Fitness Starts Here.
         </p>
 
-        <Link to="/services">
+        <Link to="/login">
           <button className="bg-[#00df9a] w-[200px] rounded-lg font-bold py-3 text-black hover:bg-[#00c785] transition-all duration-300">
             Get Started
           </button>

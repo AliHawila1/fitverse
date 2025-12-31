@@ -18,27 +18,15 @@ function App() {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null);
 
-  const addToCart = (item) => {
-    setCart([...cart, item]);
-  };
-
+  const addToCart = (item) => setCart([...cart, item]);
   const removeFromCart = (index) => {
     const updatedCart = [...cart];
     updatedCart.splice(index, 1);
     setCart(updatedCart);
   };
-
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  const handleLogin = (userData) => {
-    setUser(userData); 
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-  };
+  const clearCart = () => setCart([]);
+  const handleLogin = (userData) => setUser(userData); 
+  const handleLogout = () => setUser(null);
 
   return (
     <div className="App">
@@ -53,28 +41,35 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/registration" element={<Registration />} />
 
+          {/* Services & Equipments visible to both admin and users */}
           <Route 
             path="/services" 
-            element={user && user.username !== "admin" ? <Services onAddToCart={addToCart} /> : <Navigate to="/login" />} 
+            element={<Services onAddToCart={addToCart} user={user} />} 
           />
           <Route 
             path="/equipments" 
-            element={user && user.username !== "admin" ? <Equipments onAddToCart={addToCart} /> : <Navigate to="/login" />} 
-          />
-          <Route 
-            path="/cart" 
-            element={user && user.username !== "admin" ? <Cart cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} /> : <Navigate to="/login" />} 
+            element={<Equipments onAddToCart={addToCart} user={user} />} 
           />
 
+          {/* Cart only for normal users */}
+          <Route 
+            path="/cart" 
+            element={user && user.username !== "admin" ? (
+              <Cart cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} user={user} />
+            ) : (
+              <Navigate to="/login" />
+            )}
+          />
+
+          {/* Admin Dashboard only for admin */}
           <Route 
             path="/adminDashboard" 
             element={user && user.username === "admin" ? <AdminDashboard user={user} /> : <Navigate to="/login" />} 
           />
 
-        
           <Route 
             path="*" 
-            element={user && user.username === "admin" ? <Navigate to="/adminDashboard" /> : <Navigate to="/" />} 
+            element={<Navigate to="/" />} 
           />
         </Routes>
       </Router>

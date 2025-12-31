@@ -1,86 +1,138 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Services = ({ onAddToCart }) => {
-  const [selectedProgram, setSelectedProgram] = useState(null); 
+  const [programs, setPrograms] = useState([]);
+  
+  // 1. Checks URL for "?admin=true"
+  const queryParameters = new URLSearchParams(window.location.search);
+  const isAdmin = queryParameters.get("admin") === "true";
 
-  const programs = [
-    {
-        id: 1,
-        name: "Upper lower program",
-        description: "4 weeks Upper Lower 4 days program perfect to start your fitness journey",
-        price: "$50",
-        type: "program"
-    },
-    {
-        id: 2,
-        name: "Powerlifting",
-        description: "4 weeks powerlifting program focusing on strength",
-        price: "$60",
-        type: "program"
-    },
-    {
-        id: 3,
-        name: "bro-split",
-        description: "4 weeks Old schooled bro split grouping 2 muscles each day",
-        price: "$50",
-        type: "program"
-    },
-    {
-       id: 4,
-       name: "PPL",
-       description: "Push Pull legs 6 days program focusing on buiding muscles",
-       price: "$50",
-       type: "program"
-    },
-  ];
+  // Form states
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [name, setName] = useState("");
+  const [desc, setDesc] = useState("");
+  const [price, setPrice] = useState("");
+  const [link, setLink] = useState("");
 
-  const handleAddToCart = (program) => {
-    onAddToCart(program);
-    setSelectedProgram(null);
+  useEffect(() => {
+    axios.get("http://localhost:5000/programs")
+      .then(res => setPrograms(res.data))
+      .catch(err => console.log("DB Error:", err));
+  }, []);
+
+  // Merged Save function for both Adding and Editing
+  const handleSave = (e) => {
+    e.preventDefault();
+    
+    // Data object matching your database columns
+    const data = { 
+      program_name: name, 
+      description: desc, 
+      price: price,
+      sheet_link: link,
+      sheet_id: "" // Add state for this if needed later
+    };
+
+    if (editId) {
+      // UPDATE existing program
+      axios.put(`http://localhost:5000/programs/${editId}`, data)
+        .then(() => {
+          setPrograms(programs.map(p => p.program_id === editId ? { ...p, ...data } : p));
+          resetForm();
+        })
+        .catch(err => alert("Update failed"));
+    } else {
+      // ADD new program
+      axios.post("http://localhost:5000/programs", data)
+        .then(res => {
+          // res.data should be the object returned by your updated backend
+          setPrograms([...programs, res.data]);
+          resetForm();
+        })
+        .catch(err => alert("Add failed: Check if backend is running"));
+    }
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Delete this program forever?")) {
+      axios.delete(`http://localhost:5000/programs/${id}`)
+        .then(() => setPrograms(programs.filter(p => p.program_id !== id)));
+    }
+  };
+
+  const resetForm = () => {
+    setEditId(null);
+    setShowAddForm(false);
+    setName(""); setDesc(""); setPrice(""); setLink("");
   };
 
   return (
-    <div className="bg-black min-h-screen text-white pt-28 px-8">
-      <h1 className="text-4xl font-bold text-center mb-8">Our Programs</h1>
-
-      {selectedProgram && (
-        <div className="bg-gray-900 rounded-xl p-6 mb-8 shadow-lg text-white max-w-2xl mx-auto">
-          <h2 className="text-2xl font-bold mb-4">
-            Add to Cart: {selectedProgram.name}
-          </h2>
-          <p className="mb-4">{selectedProgram.description}</p>
-          <p className="mb-4 text-[#00df9a] font-bold">{selectedProgram.price}</p>
-          <button
-            onClick={() => handleAddToCart(selectedProgram)}
-            className="bg-[#00df9a] text-black font-bold py-2 px-4 rounded-lg mr-4 hover:bg-[#00c785] transition duration-300"
-          >
-            Add to Cart
-          </button>
-          <button
-            onClick={() => setSelectedProgram(null)}
-            className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300"
-          >
-            Cancel
-          </button>
+    <div className="bg-black text-white min-h-screen p-8">
+      
+      {/* Visual indicator for Admin */}
+      {isAdmin && (
+        <div className="bg-[#00df9a] text-black p-2 text-center font-bold mb-4 rounded">
+          ADMIN MODE ACTIVE
         </div>
       )}
 
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {programs.map((program) => (
-          <div
-            key={program.id}
-            className="bg-gray-800 rounded-2xl p-6 flex flex-col justify-between shadow-lg hover:scale-105 transform transition duration-300 h-96 w-50"
+      <div className="flex justify-between mb-8">
+        <h2 className="text-4xl font-bold">Our Programs</h2>
+        {/* ONLY ADMIN SEES ADD BUTTON */}
+        {isAdmin && (
+          <button 
+            onClick={() => setShowAddForm(!showAddForm)} 
+            className="bg-[#00df9a] text-black px-4 py-2 rounded font-bold"
           >
-            <h3 className="text-4xl font-bold mb-2">{program.name}</h3>
-            <p className="mb-4 text-gray-300 text-2xl">{program.description}</p>
-            <p className="text-[#00df9a] font-bold text-2xl">{program.price}</p>
-           
-            <button
-              onClick={() => setSelectedProgram(program)}
-              className="mt-4 bg-[#00df9a] text-black font-bold py-2 px-4 rounded-lg w-full hover:bg-[#00c785] transition duration-300"
-            >
-              Add to Cart
-            </button>
+            {showAddForm ? "Cancel" : "+ Add New"}
+          </button>
+        )}
+      </div>
+
+      {/* ADD/EDIT FORM (Only for Admin) */}
+      {isAdmin && (showAddForm || editId) && (
+        <form onSubmit={handleSave} className="bg-gray-900 p-6 rounded mb-8 border border-[#00df9a] flex flex-col gap-4">
+          <h3 className="text-xl font-bold">{editId ? "Edit Program" : "Add New Program"}</h3>
+          <input placeholder="Name" value={name} onChange={e => setName(e.target.value)} className="p-2 bg-gray-800 rounded" required />
+          <input placeholder="Price" value={price} onChange={e => setPrice(e.target.value)} className="p-2 bg-gray-800 rounded" required />
+          <input placeholder="Sheet Link" value={link} onChange={e => setLink(e.target.value)} className="p-2 bg-gray-800 rounded" />
+          <textarea placeholder="Description" value={desc} onChange={e => setDesc(e.target.value)} className="p-2 bg-gray-800 rounded" required />
+          <button type="submit" className="bg-[#00df9a] text-black py-2 rounded font-bold">Confirm & Save</button>
+          <button type="button" onClick={resetForm} className="text-gray-400 text-sm">Cancel</button>
+        </form>
+      )}
+
+      <div className="grid md:grid-cols-3 gap-6">
+        {programs.map(p => (
+          <div key={p.program_id} className="bg-gray-800 p-6 rounded-xl flex flex-col justify-between h-80">
+            <div>
+              <h3 className="text-xl font-bold">{p.program_name}</h3>
+              <p className="text-gray-400 text-sm mt-2">{p.description}</p>
+              <p className="text-[#00df9a] font-bold mt-2">${p.price}</p>
+            </div>
+            
+            <div className="flex flex-col gap-2">
+              <button onClick={() => onAddToCart(p)} className="bg-[#00df9a] text-black py-2 rounded font-bold">Buy</button>
+              
+              {isAdmin && (
+                <div className="flex justify-around mt-2 text-sm">
+                  <button 
+                    onClick={() => { setEditId(p.program_id); setName(p.program_name); setDesc(p.description); setPrice(p.price); setLink(p.sheet_link || ""); }} 
+                    className="text-blue-400 underline"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(p.program_id)} 
+                    className="text-red-500 underline"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
