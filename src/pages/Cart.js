@@ -4,7 +4,7 @@ import axios from "axios";
 
 const Cart = ({ cart, clearCart, user, removeFromCart }) => {
   
-\  const getTotalPrice = () => {
+  const getTotalPrice = () => {
     return cart.reduce((total, item) => {
       const priceString = String(item.price);
       const price = parseFloat(priceString.replace(/[^0-9.]/g, ""));
