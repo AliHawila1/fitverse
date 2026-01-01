@@ -35,8 +35,7 @@ const db = mysql.createConnection({
     host: "mysql-38424dca-alihawila9573-4714.l.aivencloud.com",
     port: 16050,
     user: "avnadmin",
-    password: "AVNS_J230g2e44T2N3mppFBx",
-    database: "gymdatabase",
+    password: process.env.DB_PASSWORD,
     ssl: {
         rejectUnauthorized: false
     }
