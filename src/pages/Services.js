@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const Services = ({ onAddToCart }) => {
   const [programs, setPrograms] = useState([]);
   
-  // 1. Checks URL for "?admin=true"
   const queryParameters = new URLSearchParams(window.location.search);
   const isAdmin = queryParameters.get("admin") === "true";
-
-  // Form states
   const [showAddForm, setShowAddForm] = useState(false);
   const [editId, setEditId] = useState(null);
   const [name, setName] = useState("");
@@ -22,21 +19,19 @@ const Services = ({ onAddToCart }) => {
       .catch(err => console.log("DB Error:", err));
   }, []);
 
-  // Merged Save function for both Adding and Editing
   const handleSave = (e) => {
     e.preventDefault();
     
-    // Data object matching your database columns
     const data = { 
       program_name: name, 
       description: desc, 
       price: price,
       sheet_link: link,
-      sheet_id: "" // Add state for this if needed later
+      sheet_id: "" 
     };
 
     if (editId) {
-      // UPDATE existing program
+  
       axios.put(`http://localhost:5000/programs/${editId}`, data)
         .then(() => {
           setPrograms(programs.map(p => p.program_id === editId ? { ...p, ...data } : p));
@@ -44,10 +39,9 @@ const Services = ({ onAddToCart }) => {
         })
         .catch(err => alert("Update failed"));
     } else {
-      // ADD new program
+
       axios.post("http://localhost:5000/programs", data)
         .then(res => {
-          // res.data should be the object returned by your updated backend
           setPrograms([...programs, res.data]);
           resetForm();
         })
@@ -71,7 +65,6 @@ const Services = ({ onAddToCart }) => {
   return (
     <div className="bg-black text-white min-h-screen p-8">
       
-      {/* Visual indicator for Admin */}
       {isAdmin && (
         <div className="bg-[#00df9a] text-black p-2 text-center font-bold mb-4 rounded">
           ADMIN MODE ACTIVE
@@ -80,7 +73,6 @@ const Services = ({ onAddToCart }) => {
 
       <div className="flex justify-between mb-8">
         <h2 className="text-4xl font-bold">Our Programs</h2>
-        {/* ONLY ADMIN SEES ADD BUTTON */}
         {isAdmin && (
           <button 
             onClick={() => setShowAddForm(!showAddForm)} 
@@ -91,7 +83,6 @@ const Services = ({ onAddToCart }) => {
         )}
       </div>
 
-      {/* ADD/EDIT FORM (Only for Admin) */}
       {isAdmin && (showAddForm || editId) && (
         <form onSubmit={handleSave} className="bg-gray-900 p-6 rounded mb-8 border border-[#00df9a] flex flex-col gap-4">
           <h3 className="text-xl font-bold">{editId ? "Edit Program" : "Add New Program"}</h3>

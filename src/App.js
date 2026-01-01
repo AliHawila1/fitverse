@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import NavBar from "./Components/NavBar.js";
 import About from './pages/About.js';
 import Services from './pages/Services.js';
