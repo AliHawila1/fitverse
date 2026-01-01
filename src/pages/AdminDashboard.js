@@ -15,7 +15,6 @@ const dashboardItems = [
   {
     title: "Programs",
     description: "Add, Edit or Delete your training programs",
-    // We add the secret 'admin=true' to the URL here
     route: "/services?admin=true", 
   },
   {
@@ -30,7 +29,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center">
-      {/* Header Section with Logout */}
       <div className="w-full max-w-5xl flex justify-between items-center mb-10">
         <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
         <button 
@@ -41,7 +39,6 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {dashboardItems.map((item, index) => (
           <div

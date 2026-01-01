@@ -21,7 +21,6 @@ const Login = ({ onLogin }) => {
 
     const { username, password } = state;
 
-    // Hardcoded admin login
     if (username === "admin" && password === "admin") {
       const adminUser = { username: "admin" };
       onLogin(adminUser);
@@ -29,7 +28,6 @@ const Login = ({ onLogin }) => {
       return;
     }
 
-    // Normal user login from database
     try {
       const res = await axios.post("http://localhost:5000/login", { username, password });
       const user = res.data;
@@ -40,7 +38,7 @@ const Login = ({ onLogin }) => {
       }
 
       onLogin(user);
-      navigate("/services"); // redirect normal user
+      navigate("/services"); 
     } catch (err) {
       console.log(err);
       alert("Invalid username or password");

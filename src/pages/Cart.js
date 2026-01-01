@@ -4,8 +4,7 @@ import axios from "axios";
 
 const Cart = ({ cart, clearCart, user, removeFromCart }) => {
   
-  // Calculates the total price by cleaning currency strings and summing them up
-  const getTotalPrice = () => {
+\  const getTotalPrice = () => {
     return cart.reduce((total, item) => {
       const priceString = String(item.price);
       const price = parseFloat(priceString.replace(/[^0-9.]/g, ""));
@@ -15,38 +14,33 @@ const Cart = ({ cart, clearCart, user, removeFromCart }) => {
 
   const handleCheckout = async () => {
     try {
-      // 1. Check if user is logged in
       if (!user) {
         alert("Please log in to checkout");
         return;
       }
 
-      // 2. Prepare the data for the backend
       const payload = {
         user_id: user.user_id,
         items: cart.map((item) => {
-          // Ensure price is a clean number before sending
           const priceString = String(item.price);
           const numericPrice = parseFloat(priceString.replace(/[^0-9.]/g, ""));
           
           return {
-            // Mapping your cart object to your DB columns: orders_item
             item_type: item.type || "Equipment", 
             item_id: item.equipment_id || item.program_id || item.id,
             item_name: item.equipment_name || item.program_name || item.name,
             price: numericPrice,
-            quantity: 1, // Defaulting to 1
+            quantity: 1, 
           };
         }),
       };
 
-      // 3. Send the POST request to the backend
-      // Note: No "/api" prefix as requested
+      
       const response = await axios.post("http://localhost:5000/orders", payload);
 
       if (response.status === 201) {
         alert(`Checkout completed! Order #${response.data.order_id} has been saved.`);
-        clearCart(); // Clear the cart after success
+        clearCart();
       }
     } catch (err) {
       console.error("Checkout Error:", err.response || err);

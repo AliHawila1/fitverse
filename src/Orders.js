@@ -24,9 +24,7 @@ const Orders = () => {
           <thead>
             <tr className="bg-gray-200 rounded-t-3xl">
               <th className="px-4 py-2">Order ID</th>
-              <th className="px-4 py-2">User ID</th>
               <th className="px-4 py-2">Username</th>
-              <th className="px-4 py-2">Total Price</th>
               <th className="px-4 py-2">Date Created</th>
               <th className="px-4 py-2">Status</th>
             </tr>
@@ -35,9 +33,7 @@ const Orders = () => {
             {orders.map((order) => (
               <tr key={order.order_id} className="border-b hover:bg-gray-50 transition-colors">
                 <td className="px-4 py-3">{order.order_id}</td>
-                <td className="px-4 py-3">{order.user_id}</td>
                 <td className="px-4 py-3">{order.username}</td>
-                <td className="px-4 py-3">{order.total_price}</td>
                 <td className="px-4 py-3">{order.order_date}</td>
                 <td className="px-4 py-3">{order.status}</td>
               </tr>

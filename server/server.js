@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import express from 'express';
-import mysql from 'mysql';
+import mysql from 'mysql2';
 import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
@@ -32,20 +32,23 @@ const upload = multer({ storage: storage });
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
+    host: "mysql-38424dca-alihawila9573-4714.l.aivencloud.com",
+    port: 16050,
+    user: "avnadmin",
+    password: "AVNS_J230g2e44T2N3mppFBx",
     database: "gymdatabase",
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 db.connect((err) => {
     if (err) {
-        console.log("DB connection error:", err);
+        console.log("Cloud DB connection error:", err);
     } else {
-        console.log("Connected to MySQL database.");
+        console.log("Connected to Aiven Cloud MySQL database!");
     }
 });
-
 
 app.post("/users", async (req, res) => {
     const q = "INSERT INTO users (username,email,password,phone_number) VALUES (?,?,?,?)";
@@ -95,10 +98,12 @@ app.get("/users", (req, res) => {
 });
 
 // Delete User
-app.delete('/users/:id', (req, res) => {
+app.delete("/users/:id", (req, res) => {
+    const id = req.params.id;
     const q = "DELETE FROM users WHERE user_id = ?";
-    db.query(q, [req.params.id], (err) => {
+    db.query(q, [id], (err) => {
         if (err) return res.status(500).json(err);
+        
         res.json("User deleted successfully");
     });
 });
@@ -233,7 +238,5 @@ app.get("/orders", (req, res) => {
     });
 });
 
-
-app.listen(5000, () => {
-    console.log(`Server is running on port 5000`);
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
