@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import NavBar from "./Components/NavBar";
-import About from './pages/About';
-import Services from './pages/Services';
-import Contact from './pages/Contact';
-import Equipments from './pages/Equipments';
-import Cart from './pages/Cart';
-import Login from './pages/Login';
-import AdminDashboard from './pages/AdminDashboard';
-import Intro from './Components/Intro';
-import Users from './Users';
-import Orders from './Orders';
-import Registration from './pages/Registration';
+import NavBar from "./Components/NavBar.js";
+import About from './pages/About.js';
+import Services from './pages/Services.js';
+import Contact from './pages/Contact.js';
+import Equipments from './pages/Equipments.js';
+import Cart from './pages/Cart.js';
+import Login from './pages/Login.js';
+import AdminDashboard from './pages/AdminDashboard.js';
+import Intro from './Components/Intro.js';
+import Users from './Users.js';
+import Orders from './Orders.js';
+import Registration from './pages/Registration.js';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 function App() {
