@@ -1,19 +1,18 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { api } from "../api.js";
 
 const Login = ({ onLogin }) => {
   const [state, setState] = useState({
     username: "",
-    password: ""
+    password: "",
   });
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setState({ ...state, [name]: value });
+    const { name, value } = e.target;
+    setState((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -21,15 +20,16 @@ const Login = ({ onLogin }) => {
 
     const { username, password } = state;
 
+    // ✅ Demo admin login (client-side)
     if (username === "admin" && password === "admin") {
-      const adminUser = { username: "admin" };
+      const adminUser = { username: "admin", isAdmin: true };
       onLogin(adminUser);
-      navigate("/adminDashboard");
+      navigate("/admin-dashboard");
       return;
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/login", { username, password });
+      const res = await api.post("/login", { username, password });
       const user = res.data;
 
       if (!user) {
@@ -38,9 +38,9 @@ const Login = ({ onLogin }) => {
       }
 
       onLogin(user);
-      navigate("/services"); 
+      navigate("/services");
     } catch (err) {
-      console.log(err);
+      console.error("Login error:", err?.response?.data || err.message);
       alert("Invalid username or password");
     }
   };
@@ -91,10 +91,8 @@ const Login = ({ onLogin }) => {
             Register here
           </Link>
         </p>
-           
-          </div>
-         
-        </div>
+      </div>
+    </div>
   );
 };
 
