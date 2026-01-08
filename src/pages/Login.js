@@ -3,41 +3,30 @@ import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api.js";
 
 const Login = ({ onLogin }) => {
-  const [state, setState] = useState({
-    username: "",
-    password: "",
-  });
-
+  const [state, setState] = useState({ username: "", password: "" });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setState((prev) => ({ ...prev, [name]: value }));
+    setState((prev) => ({ ...prev, [name]: value })); // ✅ FIX
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { username, password } = state;
+    const username = state.username.trim();
+    const password = state.password;
 
-    // ✅ Demo admin login (client-side)
+    // Admin demo
     if (username === "admin" && password === "admin") {
-      const adminUser = { username: "admin", isAdmin: true };
-      onLogin(adminUser);
-      navigate("/admin-dashboard");
+      onLogin({ username: "admin", isAdmin: true });
+      navigate("/adminDashboard");
       return;
     }
 
     try {
       const res = await api.post("/login", { username, password });
-      const user = res.data;
-
-      if (!user) {
-        alert("Invalid username or password");
-        return;
-      }
-
-      onLogin(user);
+      onLogin(res.data);
       navigate("/services");
     } catch (err) {
       console.error("Login error:", err?.response?.data || err.message);

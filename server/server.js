@@ -8,6 +8,8 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { SendProgramEmail } from "./utils/SendProgramEmail.js";
+
 
 dotenv.config();
 
@@ -264,8 +266,7 @@ app.delete("/programs/:id", (req, res) => {
 app.post("/orders", (req, res) => {
   const { user_id, items } = req.body;
 
-  const qOrder =
-    "INSERT INTO orders (user_id, status, order_date) VALUES (?, 'Pending', NOW())";
+  const qOrder = "INSERT INTO orders (user_id, status, order_date) VALUES (?, 'Pending', NOW())";
 
   db.query(qOrder, [user_id], (err, result) => {
     if (err) return res.status(500).json(err);
@@ -274,7 +275,7 @@ app.post("/orders", (req, res) => {
 
     const itemValues = items.map((item) => [
       newOrderId,
-      item.item_type, // must be 'program' or 'equipment'
+      item.item_type,   // must be 'program' or 'equipment'
       item.item_id,
       item.item_name,
       item.price,
@@ -284,12 +285,42 @@ app.post("/orders", (req, res) => {
     const qItems =
       "INSERT INTO order_items (order_id, item_type, item_id, item_name, price, quantity) VALUES ?";
 
-    db.query(qItems, [itemValues], (err2) => {
+    db.query(qItems, [itemValues], async (err2) => {
       if (err2) return res.status(500).json(err2);
+
+      // ✅ Send emails for program items (don’t block checkout if email fails)
+      try {
+        // Get user email
+        const [userRows] = await db.promise().query(
+          "SELECT email FROM users WHERE user_id = ?",
+          [user_id]
+        );
+        const userEmail = userRows?.[0]?.email;
+
+        if (userEmail) {
+          // for each program item, get sheet_link from programs table and email it
+          const programItems = items.filter((i) => i.item_type === "program");
+
+          for (const p of programItems) {
+            const [progRows] = await db.promise().query(
+              "SELECT program_name, sheet_link FROM programs WHERE program_id = ?",
+              [p.item_id]
+            );
+
+            if (progRows.length > 0 && progRows[0].sheet_link) {
+              await SendProgramEmail(userEmail, progRows[0].program_name, progRows[0].sheet_link);
+            }
+          }
+        }
+      } catch (emailErr) {
+        console.log("Email send failed (order still created):", emailErr?.message || emailErr);
+      }
+
       res.status(201).json({ message: "Order placed!", order_id: newOrderId });
     });
   });
 });
+
 
 // ✅ Admin orders (username + date + status)
 app.get("/admin/orders", (req, res) => {
