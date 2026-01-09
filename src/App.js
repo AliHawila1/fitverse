@@ -4,7 +4,6 @@ import NavBar from "./Components/NavBar.js";
 import Intro from "./Components/Intro.js";
 import About from "./pages/About.js";
 import Services from "./pages/Services.js";
-import Contact from "./pages/Contact.js";
 import Equipments from "./pages/Equipments.js";
 import Cart from "./pages/Cart.js";
 import Login from "./pages/Login.js";
@@ -42,8 +41,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Intro />} />
           <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/registration" element={<Registration />} />
           <Route

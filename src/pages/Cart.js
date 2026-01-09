@@ -25,8 +25,7 @@ const Cart = ({ cart, clearCart, user, removeFromCart }) => {
           const priceString = String(item.price);
           const numericPrice = parseFloat(priceString.replace(/[^0-9.]/g, ""));
           const normalizedType =
-            (item.type || "").toLowerCase() === "program" ||
-            item.program_id
+            (item.type || "").toLowerCase() === "program" || item.program_id
               ? "program"
               : "equipment";
 
@@ -55,42 +54,38 @@ const Cart = ({ cart, clearCart, user, removeFromCart }) => {
   };
 
   return (
-    <div className="bg-black min-h-screen text-white pt-28 px-6 md:px-12">
-      <h1 className="text-4xl font-bold text-center mb-8 text-[#00df9a]">
-        Shopping Cart
+    <div className="bg-gray-100 min-h-screen pt-28 px-6 md:px-12">
+      <h1 className="text-5xl font-extrabold text-center mb-10 text-black">
+        Your <span className="text-orange-500">Cart</span>
       </h1>
 
       {cart.length === 0 ? (
         <div className="text-center">
-          <p className="text-xl mb-4 text-gray-400">Your cart is empty</p>
+          <p className="text-xl mb-6 text-gray-600">Your cart is empty</p>
           <div className="flex justify-center space-x-4">
             <Link to="/equipments">
-              <button className="bg-[#00df9a] text-black font-bold py-3 px-6 rounded-lg hover:bg-white transition">
+              <button className="bg-orange-500 hover:bg-orange-600 text-black font-bold py-3 px-6 rounded-lg transition">
                 Shop Equipment
               </button>
             </Link>
             <Link to="/services">
-              <button className="bg-[#00df9a] text-black font-bold py-3 px-6 rounded-lg hover:bg-white transition">
+              <button className="bg-orange-500 hover:bg-orange-600 text-black font-bold py-3 px-6 rounded-lg transition">
                 Browse Programs
               </button>
             </Link>
           </div>
         </div>
       ) : (
-        <div className="max-w-5xl mx-auto">
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left border-collapse border border-gray-700">
-              <thead>
-                <tr className="bg-gray-800">
-                  <th className="border border-gray-700 px-4 py-3 text-[#00df9a]">
-                    #
-                  </th>
+        <div className="max-w-6xl mx-auto">
+          <div className="overflow-x-auto rounded-xl shadow-lg">
+            <table className="min-w-full border-collapse border border-gray-300">
+              <thead className="bg-black text-white">
+                <tr>
+                  <th className="border border-gray-700 px-4 py-3 text-orange-500">#</th>
                   <th className="border border-gray-700 px-4 py-3">Name</th>
                   <th className="border border-gray-700 px-4 py-3">Type</th>
                   <th className="border border-gray-700 px-4 py-3">Price</th>
-                  <th className="border border-gray-700 px-4 py-3 text-center">
-                    Actions
-                  </th>
+                  <th className="border border-gray-700 px-4 py-3 text-center">Actions</th>
                 </tr>
               </thead>
 
@@ -98,21 +93,21 @@ const Cart = ({ cart, clearCart, user, removeFromCart }) => {
                 {cart.map((item, index) => (
                   <tr
                     key={index}
-                    className="bg-gray-900 hover:bg-gray-800 transition"
+                    className="bg-white hover:bg-gray-50 transition"
                   >
-                    <td className="border border-gray-700 px-4 py-2">
+                    <td className="border border-gray-300 px-4 py-2 text-orange-500 font-bold">
                       {index + 1}
                     </td>
-                    <td className="border border-gray-700 px-4 py-2">
+                    <td className="border border-gray-300 px-4 py-2 font-semibold">
                       {item.name || item.equipment_name || item.program_name}
                     </td>
-                    <td className="border border-gray-700 px-4 py-2 text-gray-400">
+                    <td className="border border-gray-300 px-4 py-2 text-gray-500 capitalize">
                       {(item.type || (item.program_id ? "program" : "equipment")).toString()}
                     </td>
-                    <td className="border border-gray-700 px-4 py-2 text-[#00df9a] font-bold">
+                    <td className="border border-gray-300 px-4 py-2 text-orange-500 font-bold">
                       ${item.price}
                     </td>
-                    <td className="border border-gray-700 px-4 py-2 text-center">
+                    <td className="border border-gray-300 px-4 py-2 text-center">
                       <button
                         onClick={() => removeFromCart(index)}
                         className="bg-red-600 text-white py-1 px-4 rounded hover:bg-red-700 transition"
@@ -126,9 +121,9 @@ const Cart = ({ cart, clearCart, user, removeFromCart }) => {
             </table>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center mt-6 bg-gray-900 border border-gray-700 p-6 rounded-2xl">
+          <div className="flex flex-col md:flex-row justify-between items-center mt-8 bg-black text-white p-6 rounded-2xl shadow-lg">
             <p className="text-2xl font-bold mb-4 md:mb-0">
-              Total: <span className="text-[#00df9a]">${getTotalPrice()}</span>
+              Total: <span className="text-orange-500">${getTotalPrice()}</span>
             </p>
 
             <div className="flex space-x-4">
@@ -141,7 +136,7 @@ const Cart = ({ cart, clearCart, user, removeFromCart }) => {
 
               <button
                 onClick={handleCheckout}
-                className="bg-[#00df9a] text-black font-bold py-3 px-8 rounded-lg hover:bg-white transition"
+                className="bg-orange-500 hover:bg-orange-600 text-black font-bold py-3 px-8 rounded-lg transition"
               >
                 Checkout Now
               </button>
