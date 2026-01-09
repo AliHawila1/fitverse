@@ -18,14 +18,11 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// ✅ CORS (works for dev + production; you can restrict later using CLIENT_URL)
 app.use(cors());
 app.use(express.json());
 
-// ✅ Static uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ✅ Multer storage for equipment images
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
@@ -36,15 +33,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ✅ DB Connection (Railway env variables)
-// Make sure your Render Environment Variables include:
-// MYSQLHOST, MYSQLUSER, MYSQLPASSWORD, MYSQLPORT, MYSQLDATABASE
 const db = mysql.createConnection({
   host: process.env.MYSQLHOST,
   user: process.env.MYSQLUSER,
   password: process.env.MYSQLPASSWORD,
   port: Number(process.env.MYSQLPORT),
-  database: process.env.MYSQLDATABASE, // ✅ IMPORTANT FIX
+  database: process.env.MYSQLDATABASE,
   ssl: {
     rejectUnauthorized: false,
   },
@@ -58,7 +52,6 @@ db.connect((err) => {
   }
 });
 
-// ✅ Debug endpoint (TEMP - remove later if you want)
 app.get("/debug/db", (req, res) => {
   db.query("SELECT DATABASE() AS db, @@hostname AS host", (err, data) => {
     if (err) return res.status(500).json(err);
@@ -66,7 +59,6 @@ app.get("/debug/db", (req, res) => {
   });
 });
 
-// ✅ Create User (Strong + always hashes password + prevents duplicates)
 app.post("/users", async (req, res) => {
   const { username, email, password, phone_number } = req.body;
 
@@ -102,7 +94,6 @@ app.post("/users", async (req, res) => {
   }
 });
 
-// ✅ Login API (bcrypt compare + JWT)
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -131,7 +122,7 @@ app.post("/login", (req, res) => {
   });
 });
 
-// ✅ Get Users
+//  Get Users
 app.get("/users", (req, res) => {
   const q = "SELECT user_id, username, email, phone_number FROM users";
   db.query(q, (err, data) => {
@@ -140,7 +131,7 @@ app.get("/users", (req, res) => {
   });
 });
 
-// ✅ Delete User
+//Delete User
 app.delete("/users/:id", (req, res) => {
   const id = req.params.id;
   const q = "DELETE FROM users WHERE user_id = ?";
@@ -150,7 +141,7 @@ app.delete("/users/:id", (req, res) => {
   });
 });
 
-// --- EQUIPMENT API ---
+//EQUIPMENT API
 
 app.get("/equipment", (req, res) => {
   db.query("SELECT * FROM equipment", (err, data) => {
@@ -213,7 +204,7 @@ app.delete("/equipment/:id", (req, res) => {
   });
 });
 
-// --- PROGRAMS API ---
+//PROGRAMS API
 
 app.get("/programs", (req, res) => {
   db.query("SELECT * FROM programs", (err, data) => {
@@ -261,7 +252,7 @@ app.delete("/programs/:id", (req, res) => {
   });
 });
 
-// --- ORDERS API ---
+//ORDERS APi
 
 app.post("/orders", (req, res) => {
   const { user_id, items } = req.body;
@@ -275,7 +266,7 @@ app.post("/orders", (req, res) => {
 
     const itemValues = items.map((item) => [
       newOrderId,
-      item.item_type,   // must be 'program' or 'equipment'
+      item.item_type, 
       item.item_id,
       item.item_name,
       item.price,
@@ -288,9 +279,7 @@ app.post("/orders", (req, res) => {
     db.query(qItems, [itemValues], async (err2) => {
       if (err2) return res.status(500).json(err2);
 
-      // ✅ Send emails for program items (don’t block checkout if email fails)
       try {
-        // Get user email
         const [userRows] = await db.promise().query(
           "SELECT email FROM users WHERE user_id = ?",
           [user_id]
@@ -298,7 +287,6 @@ app.post("/orders", (req, res) => {
         const userEmail = userRows?.[0]?.email;
 
         if (userEmail) {
-          // for each program item, get sheet_link from programs table and email it
           const programItems = items.filter((i) => i.item_type === "program");
 
           for (const p of programItems) {
@@ -322,7 +310,6 @@ app.post("/orders", (req, res) => {
 });
 
 
-// ✅ Admin orders (username + date + status)
 app.get("/admin/orders", (req, res) => {
   const q = `
     SELECT orders.order_id, users.username, orders.status, orders.order_date 

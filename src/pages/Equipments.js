@@ -69,7 +69,6 @@ const Equipments = ({ onAddToCart }) => {
         );
         resetForm();
       } catch (err) {
-        console.error("PUT Error:", err.response?.data || err.message);
         alert("Error updating equipment.");
       }
     } else {
@@ -78,7 +77,6 @@ const Equipments = ({ onAddToCart }) => {
         setEquipments([...equipments, res.data]);
         resetForm();
       } catch (err) {
-        console.error("POST Error:", err.response?.data || err.message);
         alert("Error adding new equipment.");
       }
     }
@@ -90,26 +88,27 @@ const Equipments = ({ onAddToCart }) => {
       await api.delete(`/equipment/${id}`);
       setEquipments(equipments.filter((e) => e.equipment_id !== id));
     } catch (err) {
-      console.error("DELETE Error:", err.response?.data || err.message);
       alert("Error deleting equipment.");
     }
   };
 
   return (
-    <div className="bg-black min-h-screen text-white pt-28 px-6 md:px-12">
+    <div className="min-h-screen bg-gray-100 pt-28 px-6 md:px-12">
       {isAdmin && (
-        <div className="bg-[#00df9a] text-black text-center font-bold p-2 mb-4 rounded">
+        <div className="bg-orange-500 text-black text-center font-bold py-2 mb-6 rounded-lg">
           ADMIN MODE
         </div>
       )}
 
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold text-[#00df9a]">Fitness Equipment</h1>
+      <div className="flex justify-between items-center mb-10">
+        <h1 className="text-4xl font-extrabold text-black">
+          Fitness Equipment
+        </h1>
 
         {isAdmin && (
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-[#00df9a] text-black px-4 py-2 rounded font-bold"
+            className="bg-orange-500 hover:bg-orange-600 text-black px-5 py-2 rounded-lg font-bold transition"
           >
             {showForm ? "Cancel" : "+ Add Equipment"}
           </button>
@@ -119,15 +118,17 @@ const Equipments = ({ onAddToCart }) => {
       {isAdmin && (showForm || editId) && (
         <form
           onSubmit={handleSave}
-          className="bg-gray-900 p-6 rounded-xl border border-[#00df9a] mb-10 flex flex-col gap-4"
+          className="bg-black text-white p-6 rounded-2xl shadow-xl mb-12 flex flex-col gap-4"
         >
-          <h2 className="text-xl font-bold">{editId ? "Edit" : "Add"} Equipment</h2>
+          <h2 className="text-2xl font-bold">
+            {editId ? "Edit" : "Add"} Equipment
+          </h2>
 
           <input
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="p-2 bg-gray-800 rounded"
+            className="px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-orange-500 outline-none"
             required
           />
 
@@ -135,7 +136,7 @@ const Equipments = ({ onAddToCart }) => {
             placeholder="Price"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="p-2 bg-gray-800 rounded"
+            className="px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-orange-500 outline-none"
             required
           />
 
@@ -143,7 +144,7 @@ const Equipments = ({ onAddToCart }) => {
             placeholder="Description"
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
-            className="p-2 bg-gray-800 rounded"
+            className="px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-orange-500 outline-none"
             required
           />
 
@@ -153,41 +154,49 @@ const Equipments = ({ onAddToCart }) => {
             className="text-sm text-gray-400"
           />
 
-          <button className="bg-[#00df9a] text-black font-bold py-2 rounded">
+          <button className="bg-orange-500 hover:bg-orange-600 text-black font-bold py-3 rounded-lg transition">
             Save Equipment
           </button>
         </form>
       )}
 
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {equipments.map((item) => (
           <div
             key={item.equipment_id}
-            className="bg-gray-800 rounded-2xl overflow-hidden shadow-lg flex flex-col"
+            className="bg-black text-white rounded-2xl overflow-hidden shadow-xl flex flex-col"
           >
             <img
               src={`${API_BASE}/uploads/${item.image}`}
               alt={item.equipment_name}
-              className="h-48 w-full object-cover"
+              className="h-52 w-full object-cover"
               onError={(e) => {
-                e.currentTarget.src = "https://via.placeholder.com/300x200";
+                e.currentTarget.src = "https://via.placeholder.com/400x300";
               }}
             />
 
             <div className="p-6 flex flex-col flex-grow">
-              <h2 className="text-2xl font-bold mb-2">{item.equipment_name}</h2>
-              <p className="text-gray-400 mb-4 flex-grow">{item.description}</p>
-              <p className="text-[#00df9a] font-bold text-lg mb-4">${item.price}</p>
+              <h2 className="text-2xl font-bold mb-2">
+                {item.equipment_name}
+              </h2>
+
+              <p className="text-gray-400 mb-4 flex-grow">
+                {item.description}
+              </p>
+
+              <p className="text-orange-400 font-bold text-xl mb-5">
+                ${item.price}
+              </p>
 
               <button
                 onClick={() => onAddToCart(item)}
-                className="bg-[#00df9a] text-black font-bold py-2 rounded-lg"
+                className="bg-orange-500 hover:bg-orange-600 text-black font-bold py-3 rounded-lg transition"
               >
                 Add to Cart
               </button>
 
               {isAdmin && (
-                <div className="flex justify-between mt-4 border-t border-gray-700 pt-4">
+                <div className="flex justify-between mt-5 pt-4 border-t border-gray-700 text-sm">
                   <button
                     onClick={() => {
                       setEditId(item.equipment_id);
@@ -196,14 +205,14 @@ const Equipments = ({ onAddToCart }) => {
                       setPrice(item.price);
                       setShowForm(true);
                     }}
-                    className="text-blue-400 underline"
+                    className="text-orange-400 hover:underline"
                   >
                     Edit
                   </button>
 
                   <button
                     onClick={() => handleDelete(item.equipment_id)}
-                    className="text-red-500 underline"
+                    className="text-red-500 hover:underline"
                   >
                     Delete
                   </button>

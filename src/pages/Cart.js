@@ -24,8 +24,6 @@ const Cart = ({ cart, clearCart, user, removeFromCart }) => {
         items: cart.map((item) => {
           const priceString = String(item.price);
           const numericPrice = parseFloat(priceString.replace(/[^0-9.]/g, ""));
-
-          // ✅ Must match DB enum('program','equipment')
           const normalizedType =
             (item.type || "").toLowerCase() === "program" ||
             item.program_id

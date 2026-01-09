@@ -8,7 +8,7 @@ const Login = ({ onLogin }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setState((prev) => ({ ...prev, [name]: value })); // ✅ FIX
+    setState((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -16,8 +16,6 @@ const Login = ({ onLogin }) => {
 
     const username = state.username.trim();
     const password = state.password;
-
-    // Admin demo
     if (username === "admin" && password === "admin") {
       onLogin({ username: "admin", isAdmin: true });
       navigate("/adminDashboard");
@@ -35,13 +33,20 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="bg-black min-h-screen flex justify-center items-center p-4 pt-28">
-      <div className="bg-gray-800 text-white p-8 rounded-2xl shadow-lg max-w-md w-full">
-        <h2 className="text-3xl font-bold mb-6 text-center">Login to FitVerse</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 pt-28">
+      <div className="w-full max-w-md bg-black text-white p-8 rounded-2xl shadow-2xl">
+        <h2 className="text-3xl font-extrabold text-center mb-6">
+          Welcome Back
+        </h2>
+        <p className="text-center text-gray-400 mb-8">
+          Login to your FitVerse account
+        </p>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2">Username</label>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium mb-2 text-gray-300">
+              Username
+            </label>
             <input
               name="username"
               type="text"
@@ -49,12 +54,14 @@ const Login = ({ onLogin }) => {
               value={state.username}
               onChange={handleChange}
               required
-              className="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00df9a]"
+              className="w-full px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
             />
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-semibold mb-2">Password</label>
+          <div>
+            <label className="block text-sm font-medium mb-2 text-gray-300">
+              Password
+            </label>
             <input
               name="password"
               type="password"
@@ -62,21 +69,24 @@ const Login = ({ onLogin }) => {
               value={state.password}
               onChange={handleChange}
               required
-              className="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00df9a]"
+              className="w-full px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-[#00df9a] text-black font-bold py-3 rounded-lg hover:bg-[#00c785] transition"
+            className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold py-3 rounded-lg transition duration-300"
           >
             Login
           </button>
         </form>
 
-        <p className="text-center text-sm mt-4">
-          Don't have an account?{" "}
-          <Link to="/registration" className="text-blue-400 hover:underline">
+        <p className="text-center text-sm text-gray-400 mt-6">
+          Don&apos;t have an account?{" "}
+          <Link
+            to="/registration"
+            className="text-orange-400 hover:text-orange-500 font-semibold"
+          >
             Register here
           </Link>
         </p>

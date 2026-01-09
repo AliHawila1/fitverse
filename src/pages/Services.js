@@ -45,28 +45,24 @@ const Services = ({ onAddToCart }) => {
       try {
         await api.put(`/programs/${editId}`, data);
         setPrograms(
-          programs.map((p) => (p.program_id === editId ? { ...p, ...data } : p))
+          programs.map((p) =>
+            p.program_id === editId ? { ...p, ...data } : p
+          )
         );
         resetForm();
-      } catch (err) {
-        console.error("Update failed:", err?.response?.data || err.message);
+      } catch {
         alert("Update failed");
       }
     } else {
       try {
         const res = await api.post("/programs", data);
-
-        // backend returns { program_id: ..., ... } OR just {program_id}
-        // keep your UI stable by appending the created item
         const created = res.data?.program_id
           ? { program_id: res.data.program_id, ...data }
           : res.data;
-
         setPrograms([...programs, created]);
         resetForm();
-      } catch (err) {
-        console.error("Add failed:", err?.response?.data || err.message);
-        alert("Add failed: Check backend");
+      } catch {
+        alert("Add failed");
       }
     }
   };
@@ -76,29 +72,30 @@ const Services = ({ onAddToCart }) => {
     try {
       await api.delete(`/programs/${id}`);
       setPrograms(programs.filter((p) => p.program_id !== id));
-    } catch (err) {
-      console.error("Delete failed:", err?.response?.data || err.message);
+    } catch {
       alert("Delete failed");
     }
   };
 
   return (
-    <div className="bg-black text-white min-h-screen p-8">
+    <div className="min-h-screen bg-gray-100 pt-28 px-6 md:px-12">
       {isAdmin && (
-        <div className="bg-[#00df9a] text-black p-2 text-center font-bold mb-4 rounded">
+        <div className="bg-orange-500 text-black py-2 text-center font-bold mb-6 rounded-lg">
           ADMIN MODE ACTIVE
         </div>
       )}
 
-      <div className="flex justify-between mb-8">
-        <h2 className="text-4xl font-bold">Our Programs</h2>
+      <div className="flex justify-between items-center mb-10">
+        <h2 className="text-4xl font-extrabold text-black">
+          Training Programs
+        </h2>
 
         {isAdmin && (
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-[#00df9a] text-black px-4 py-2 rounded font-bold"
+            className="bg-orange-500 hover:bg-orange-600 text-black px-5 py-2 rounded-lg font-bold transition"
           >
-            {showAddForm ? "Cancel" : "+ Add New"}
+            {showAddForm ? "Cancel" : "+ Add Program"}
           </button>
         )}
       </div>
@@ -106,17 +103,17 @@ const Services = ({ onAddToCart }) => {
       {isAdmin && (showAddForm || editId) && (
         <form
           onSubmit={handleSave}
-          className="bg-gray-900 p-6 rounded mb-8 border border-[#00df9a] flex flex-col gap-4"
+          className="bg-black text-white p-6 rounded-2xl shadow-xl mb-12 flex flex-col gap-4"
         >
-          <h3 className="text-xl font-bold">
+          <h3 className="text-2xl font-bold">
             {editId ? "Edit Program" : "Add New Program"}
           </h3>
 
           <input
-            placeholder="Name"
+            placeholder="Program Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="p-2 bg-gray-800 rounded"
+            className="px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-orange-500 outline-none"
             required
           />
 
@@ -124,64 +121,70 @@ const Services = ({ onAddToCart }) => {
             placeholder="Price"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="p-2 bg-gray-800 rounded"
+            className="px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-orange-500 outline-none"
             required
           />
 
           <input
-            placeholder="Sheet Link"
+            placeholder="Sheet Link (optional)"
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            className="p-2 bg-gray-800 rounded"
+            className="px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-orange-500 outline-none"
           />
 
           <textarea
-            placeholder="Description"
+            placeholder="Program Description"
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
-            className="p-2 bg-gray-800 rounded"
+            className="px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-orange-500 outline-none"
             required
           />
 
           <button
             type="submit"
-            className="bg-[#00df9a] text-black py-2 rounded font-bold"
+            className="bg-orange-500 hover:bg-orange-600 text-black py-3 rounded-lg font-bold transition"
           >
-            Confirm & Save
+            Save Program
           </button>
 
           <button
             type="button"
             onClick={resetForm}
-            className="text-gray-400 text-sm"
+            className="text-gray-400 text-sm hover:underline"
           >
             Cancel
           </button>
         </form>
       )}
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
         {programs.map((p) => (
           <div
             key={p.program_id}
-            className="bg-gray-800 p-6 rounded-xl flex flex-col justify-between h-80"
+            className="bg-black text-white p-6 rounded-2xl shadow-xl flex flex-col justify-between h-80"
           >
             <div>
-              <h3 className="text-xl font-bold">{p.program_name}</h3>
-              <p className="text-gray-400 text-sm mt-2">{p.description}</p>
-              <p className="text-[#00df9a] font-bold mt-2">${p.price}</p>
+              <h3 className="text-2xl font-bold mb-2">
+                {p.program_name}
+              </h3>
+              <p className="text-gray-400 text-sm mb-3">
+                {p.description}
+              </p>
+              <p className="text-orange-400 font-bold text-xl">
+                ${p.price}
+              </p>
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <button
                 onClick={() => onAddToCart(p)}
-                className="bg-[#00df9a] text-black py-2 rounded font-bold"
+                className="bg-orange-500 hover:bg-orange-600 text-black py-3 rounded-lg font-bold transition"
               >
-                Buy
+                Buy Program
               </button>
 
               {isAdmin && (
-                <div className="flex justify-around mt-2 text-sm">
+                <div className="flex justify-between text-sm pt-3 border-t border-gray-700">
                   <button
                     onClick={() => {
                       setEditId(p.program_id);
@@ -191,14 +194,14 @@ const Services = ({ onAddToCart }) => {
                       setLink(p.sheet_link || "");
                       setShowAddForm(true);
                     }}
-                    className="text-blue-400 underline"
+                    className="text-orange-400 hover:underline"
                   >
                     Edit
                   </button>
 
                   <button
                     onClick={() => handleDelete(p.program_id)}
-                    className="text-red-500 underline"
+                    className="text-red-500 hover:underline"
                   >
                     Delete
                   </button>
